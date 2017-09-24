@@ -7,10 +7,9 @@ from IPython.display import display as Idisplay
 import pickle
 import os
 
-def myVar(initialize, bounds, units, fmt):
+def myVar(initialize, bounds, units):
     v = Var(bounds=bounds, initialize=initialize)
     v.units = units
-    v.fmt = fmt
     return v
 
 def myCon(expr):
@@ -37,43 +36,45 @@ def humid_air(patm=101325, statename="", **fixedVars):
     b.patm = patm
     b.statename = statename
     b.fixedVars = fixedVars
-    
-    b.t    = myVar(ref["t"]   , (-100, 250), "°C",       "{:8.3f}")
-    b.tw   = myVar(ref["tw"]  , (-100, 250), "°C",       "{:8.3f}")
-    b.td   = myVar(ref["td"]  , (-100, 250), "°C",       "{:8.3f}")
-    b.T    = myVar(ref["T"]   , ( 173, 523), "K" ,       "{:8.3f}")
-    b.Tw   = myVar(ref["Tw"]  , ( 173, 523), "K" ,       "{:8.3f}")
-    b.Td   = myVar(ref["Td"]  , ( 173, 523), "K" ,       "{:8.3f}")
-    b.psat = myVar(ref["psat"], (   0, big), "Pa",       "{:8.1f}")
-    b.pvap = myVar(ref["pvap"], (   0, big), "Pa",       "{:8.1f}")
-    b.Gv   = myVar(ref["Gv"]  , (-big, big), "J/mol",    "{:8.1f}")
-    b.A    = myVar(ref["A"]   , (   0, big), "kg",       "{:8.3f}")
-    b.Wv   = myVar(ref["Wv"]  , (   0, big), "kg",       "{:8.4f}")
-    b.rh   = myVar(ref["rh"]  , (   0,   1), "-",        "{:8.3f}")
-    b.hm   = myVar(ref["hm"]  , (-big, big), "kJ/kga",   "{:8.1f}")
-    b.vs   = myVar(ref["vs"]  , (   0, big), "m³/kga",   "{:8.3f}")
-    b.cpha = myVar(ref["cpha"], (   0, big), "J/mola/K", "{:8.3f}")
+
+    b.t    = myVar(ref["t"]   , (-100, 250), "°C")
+    b.tw   = myVar(ref["tw"]  , (-100, 250), "°C")
+    b.td   = myVar(ref["td"]  , (-100, 250), "°C")
+    b.T    = myVar(ref["T"]   , ( 173, 523), "K" )
+    b.Tw   = myVar(ref["Tw"]  , ( 173, 523), "K" )
+    b.Td   = myVar(ref["Td"]  , ( 173, 523), "K" )
+    b.psat = myVar(ref["psat"], (   0, big), "Pa")
+    b.pvap = myVar(ref["pvap"], (   0, big), "Pa")
+    b.Gv   = myVar(ref["Gv"]  , (-big, big), "J/mol")
+    b.A    = myVar(ref["A"]   , (   0, big), "kg")
+    b.Wv   = myVar(ref["Wv"]  , (   0, big), "kg/kga")
+    b.rh   = myVar(ref["rh"]  , (   0,   1), "-")
+    b.hm   = myVar(ref["hm"]  , (-big, big), "kJ/kga")
+    b.vs   = myVar(ref["vs"]  , (   0, big), "m³/kga")
+    b.cpha = myVar(ref["cpha"], (   0, big), "J/mola/K")
 
     b.T_convert  = myCon(b.T == Tref + b.t)
     b.Tw_convert = myCon(b.Tw == Tref + b.tw)
     b.Td_convert = myCon(b.Td == Tref + b.td)
 
-    b.rh_def   = myCon( b.psat * b.rh == b.Wv / H2O.M / (b.A / air.M + b.Wv / H2O.M) * patm )
+    bA1 = 1
+
+    b.rh_def   = myCon( b.psat * b.rh == b.Wv / H2O.M / (bA1 / air.M + b.Wv / H2O.M) * patm )
     b.psat_def = myCon( b.psat == H2O.psat(b.T) )
-    b.pvap_def = myCon( b.pvap == b.Wv / H2O.M / (b.A / air.M + b.Wv / H2O.M) * patm )
+    b.pvap_def = myCon( b.pvap == b.Wv / H2O.M / (bA1 / air.M + b.Wv / H2O.M) * patm )
     b.Gv_def   = myCon( b.Gv == b.Wv / H2O.M * (H2O.l.G0(b.T) + Rgas * b.T * log(b.pvap / b.psat)) )
-    b.Td_def   = myCon( b.Wv / H2O.M / (b.A / air.M + b.Wv / H2O.M) * patm == H2O.psat(b.Td) )
-    b.hm_def   = myCon( b.A * b.hm ==
-                       b.A / air.M * (air.H0(b.T) - air.H0(Tref)) + b.Wv / H2O.M * (H2O.g.H0(b.T) - H2O.l.H0(Tref)) )
-    b.cpha_def = myCon( b.A * b.cpha / air.M == 
-                       b.A / air.M * air.cp0(b.T) + b.Wv / H2O.M * H2O.g.cp0(b.T))
-    b.Tw_def   = myCon( H2O.psat(b.Tw) / patm - b.Wv / H2O.M / (b.Wv / H2O.M + b.A / air.M) ==
+    b.Td_def   = myCon( b.Wv / H2O.M / (bA1 / air.M + b.Wv / H2O.M) * patm == H2O.psat(b.Td) )
+    b.hm_def   = myCon( bA1 * b.hm ==
+                       bA1 / air.M * (air.H0(b.T) - air.H0(Tref)) + b.Wv / H2O.M * (H2O.g.H0(b.T) - H2O.l.H0(Tref)) )
+    b.cpha_def = myCon( bA1 * b.cpha / air.M ==
+                       bA1 / air.M * air.cp0(b.T) + b.Wv / H2O.M * H2O.g.cp0(b.T))
+    b.Tw_def   = myCon( H2O.psat(b.Tw) / patm - b.Wv / H2O.M / (b.Wv / H2O.M + bA1 / air.M) ==
                        b.cpha / H2O.L(Tref) * (b.T - b.Tw))
-    b.vs_def   = myCon( b.vs == (b.Wv / H2O.M + b.A / air.M) * Rgas * b.T / patm / b.A * 1000)
+    b.vs_def   = myCon( b.vs == (b.Wv / H2O.M + bA1 / air.M) * Rgas * b.T / patm / bA1 * 1000)
 
     for (var, val) in fixedVars.items():
         setattr(b, var+"_fixed", myCon(getattr(b, var) == val))
-       
+
     return b
 
 def ipoptsolve(block):
@@ -83,10 +84,12 @@ def ipoptsolve(block):
     block.result = opt.solve(model)
     if block.result.Solver[0].Status.key != 'ok': print(block.fixedVars)
     return block
+
 Block.solve = ipoptsolve
 
 def valuelist(block, props):
     return [getattr(block,p).value for p in props]
+
 Block.valuelist = valuelist
 
 def state(ha):
@@ -112,13 +115,20 @@ Block.constraintTable = constraintTable
 def display(df, fmt='{:3.4g}'):
     pd.options.display.float_format = fmt.format
     Idisplay(df)
-pd.DataFrame.display = display   
+pd.DataFrame.display = display
 
 class psy_curves:
-    def __init__(self, patm=101325):   
+    def __init__(self, patm=101325):
         self.patm = patm
         self.pickleFile = os.path.join(os.path.dirname(__file__), 'psy_curves_' + str(patm) + '.p')
-    
+
+    def read(self):
+        try:
+            self = pickle.load(open(self.pickleFile, "rb"))
+            return self
+        except:
+            return self.write()
+
     def write(self):
         t_range  = np.arange(    0,   52,    2)
         rh_range = [0.001]+np.arange( 0.1, 1.1, 0.1).tolist()
@@ -132,48 +142,37 @@ class psy_curves:
         self.vs = {vs:[humid_air(patm=patm, A=1, vs=vs, rh=rh).solve().valuelist(['t','Wv']) for rh in rh_range] for vs in vs_range}
         pickle.dump(self, open(self.pickleFile, "wb"))
         return self
-        
-    def read(self):
-        try:
-            self = pickle.load(open(self.pickleFile, "rb"))
-            return self
-        except:
-            return self.write()
-    
-    def chart(self, lha=[]):
-        curveStyle   = {'Curve':{'style': {'line_width':0, 'hover_line_alpha':1}}}
-        curvePlot    = {'Curve':{'plot':{'width': 675, 'height':556, 'tools':['hover'], 'toolbar':'above', 'yaxis':'right'}}}
-        overlayPlot  = {'Overlay':{'plot': {'title_format': 'Psychrometric Chart'}} }
-        gridStyle      = {'Curve':{'style': {'line_width':0, 'color':'black', 'alpha':0.2}}}
-        
-        process = [(ha.t.value, ha.Wv.value)  for ha in lha]
-        p = hv.Overlay( [hv.Curve(v, kdims=['T'], vdims=['Wv']) for (k,v) in self.rh.items()] )
-        q = hv.Overlay( [hv.Curve(v, kdims=['T'], vdims=['Wv']) for (k,v) in self.hm.items()] )
-        r = hv.Overlay( [hv.Curve(v, kdims=['T'], vdims=['Wv']) for (k,v) in self.tw.items()] )
-        s = hv.Overlay( [hv.Curve(v, kdims=['T'], vdims=['Wv']) for (k,v) in self.vs.items()] )
-        t =              hv.Curve(process, kdims=['T'], vdims=['Wv'])
-        u =              hv.Points(process, kdims=['T', 'Wv'])
 
-        grid = hv.Overlay(
-                [hv.Curve([( 0, y),(50,   y)], kdims=['T'], vdims=['Wv']) for y in np.arange(0, 0.042, 0.002)]+
-                [hv.Curve([( x, 0),( x,0.04)], kdims=['T'], vdims=['Wv']) for x in np.arange(0,    52,     2)] )
+    def chart(self, points=None, paths=None, rh_alpha=0.5, hm_alpha=0.5, tw_alpha=0.0, vs_alpha=0.0):
+        if points is None: points = []
+        if paths is None: paths = []
+        rh = hv.Overlay( [hv.Curve(v) for (k,v) in self.rh.items()] )
+        hm = hv.Overlay( [hv.Curve(v) for (k,v) in self.hm.items()] )
+        tw = hv.Overlay( [hv.Curve(v) for (k,v) in self.tw.items()] )
+        vs = hv.Overlay( [hv.Curve(v) for (k,v) in self.vs.items()] )
 
-        def psychart(rh,hm,tw,vs):
-            pcolor  = {'Curve': {'style': {'color':'red'   , 'alpha':rh}}}
-            qcolor  = {'Curve': {'style': {'color':'blue'  , 'alpha':hm}}}
-            rcolor  = {'Curve': {'style': {'color':'green' , 'alpha':tw}}}
-            scolor  = {'Curve': {'style': {'color':'grey'  , 'alpha':vs}}}
-            tcolor  = {'Curve': {'style': {'color':'black' , 'alpha':1 }}}
-            ucolor  = {'Points':{'style': {'size':3 , 'alpha':1 }}}
-            
-            g = p(pcolor) * q(qcolor) * r(rcolor) * s(scolor) * t(tcolor) * u(ucolor) * grid(gridStyle)
-            g = g.redim(T ={'range': (0, 50   ),'label': 'Dry bulb temperature  [°C]'})
-            g = g.redim(Wv={'range': (0, 0.030),'label': 'Humidity ratio  [kg/kg]'})
-            return g
-        
-        dmap = hv.DynamicMap(psychart, kdims=['rh','hm','tw','vs'], )
-        slider = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-        g = dmap.redim.values(rh=slider,hm=slider, tw=slider, vs=slider)
-        chart = g(curveStyle)(curvePlot)(overlayPlot)
+        txyn = [(point.t.value, point.Wv.value, point.statename)   for point in points]
+        po = hv.Points(txyn) * hv.Overlay([ hv.Text(x+1,y+0.001,n) for (x,y,n) in txyn ])
 
-        return chart
+        pa = hv.Path([[(point.t.value, point.Wv.value) for point in path] for path in paths] )
+
+        gr = hv.Overlay(  [hv.Curve([( 0, y),(50,   y)]) for y in np.arange(0, 0.042, 0.002)]+
+                            [hv.Curve([( x, 0),( x,0.04)]) for x in np.arange(0,    52,     2)] )
+
+        g = rh({'Curve' : {'style': {'color':'red'   , 'alpha':rh_alpha, 'hover_line_alpha':1}}}) *\
+            hm({'Curve' : {'style': {'color':'blue'  , 'alpha':hm_alpha, 'hover_line_alpha':1}}}) *\
+            tw({'Curve' : {'style': {'color':'green' , 'alpha':tw_alpha}}}) *\
+            vs({'Curve' : {'style': {'color':'grey'  , 'alpha':vs_alpha}}}) *\
+            po({'Points': {'style': {'color':'black' , 'size':5 }}})        *\
+            pa({'Path'  : {'style': {'color':'black'}}})                    *\
+            gr({'Curve' : {'style': {'color':'black' , 'alpha':0.1}}})
+
+        g = g.redim(x ={'range': (0, 50   ),'label': 'Dry bulb temperature  [°C]'})
+        g = g.redim(y ={'range': (0, 0.030),'label': 'Humidity ratio     [kg/kg]'})
+
+        g = g({'Curve':{'style': {'line_width':0}}})
+        g = g({'Curve':{'plot':{'tools':['hover'], 'toolbar':'above', 'yaxis':'right'}}})
+        g = g({'Overlay':{'plot': {'width': 675, 'height':556, 'title_format': 'Psychrometric Chart (' + str(self.patm) + ' Pa)'}} })
+        g = g({'Text':{'style': {'text_font_size':'8pt'}}})
+
+        return g
