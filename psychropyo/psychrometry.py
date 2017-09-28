@@ -1,11 +1,12 @@
 from psychroutils import *
 from psychrothermo import *
 from psychrochart import *
+from psychroprocess import *
 from pyomo.environ import Block
 
-def heat(stream='heat', **fixedVars):
+def heat(element='heat', **fixedVars):
     b = Block()
-    b.stream = stream
+    b.element = element
     b.H    = myVar(0   , (-big,big), "kJ")      # extensive quantities
     b.A    = myVar(0   , (   0,  0), "kg")
     b.V    = myVar(0   , (   0,  0), "kg")
@@ -13,9 +14,9 @@ def heat(stream='heat', **fixedVars):
     for (var, val) in fixedVars.items(): setattr(b, var+"_fixed", myCon(getattr(b, var) == val))
     return b
 
-def water(stream='water', **fixedVars):
+def water(element='water', **fixedVars):
     b = Block()
-    b.stream = stream
+    b.element = element
     b.T = myVar(300, (173, 523), "K")
     b.t = myVar( 25, (-100, 250), "°C")
     b.H    = myVar(0   , (-big,big), "kJ")      # extensive quantities
@@ -27,9 +28,9 @@ def water(stream='water', **fixedVars):
     for (var, val) in fixedVars.items(): setattr(b, var+"_fixed", myCon(getattr(b, var) == val))
     return b
 
-def vapor(stream='vapor', **fixedVars):
+def vapor(element='vapor', **fixedVars):
     b = Block()
-    b.stream = stream
+    b.element = element
     b.T = myVar(300, (173, 523), "K")
     b.t = myVar( 25, (-100, 250), "°C")
     b.H    = myVar(0   , (-big,big), "kJ")      # extensive quantities
@@ -41,7 +42,7 @@ def vapor(stream='vapor', **fixedVars):
     for (var, val) in fixedVars.items(): setattr(b, var+"_fixed", myCon(getattr(b, var) == val))
     return b
 
-def humid_air(stream, patm=101325, **fixedVars):
+def humid_air(element, patm=101325, **fixedVars):
     ref = {  'A': 1.0,
              'H': -106.15871698950642,
              'V': 0.007912721306430524,
@@ -61,7 +62,7 @@ def humid_air(stream, patm=101325, **fixedVars):
              'vs': 0.8587547216582929   }
     b = Block()
     b.patm = patm
-    b.stream = stream
+    b.element = element
 
     b.t    = myVar(ref["t"]   , (-100, 250), "°C")          # intensive quantities
     b.tw   = myVar(ref["tw"]  , (-100, 250), "°C")

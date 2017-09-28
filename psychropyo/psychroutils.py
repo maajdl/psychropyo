@@ -29,16 +29,16 @@ Block.valuelist = valuelist
 
 def streamDic(ha):
     dic = {v.local_name: v.value for v in ha.component_objects(Var)}
-    dic.update({'stream':ha.stream})
+    dic.update({'element':ha.element})
     return dic
 Block.streamDic = streamDic
 
 def streamTable(lha, fmt='{:3.4g}'):
     pd.options.display.float_format = fmt.format
     df = [streamDic(ha) for ha in lha]
-    di = [ha.stream for ha in lha]
+    di = [ha.element for ha in lha]
     df = pd.DataFrame(df, index=di)
-    df = df.drop('stream', 1)
+    df = df.drop('element', 1)
     return df
 
 def constraintTable(ha, fmt='{:3.4g}'):

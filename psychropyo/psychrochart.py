@@ -40,7 +40,7 @@ class PsychrometricChart:
         tw = hv.Overlay( [hv.Curve(v) for (k,v) in self.tw.items()] )
         vs = hv.Overlay( [hv.Curve(v) for (k,v) in self.vs.items()] )
 
-        txyn = [(point.t.value, point.v.value, point.stream)   for point in points]
+        txyn = [(point.t.value, point.v.value, point.element)   for point in points]
         po = hv.Points(txyn) * hv.Overlay([ hv.Text(x+1,y+0.001,n) for (x,y,n) in txyn ])
 
         pa = hv.Path([[(point.t.value, point.v.value) for point in path] for path in paths] )
