@@ -1,24 +1,41 @@
-from psychrothermo import air, H2O, Rgas, Tref, pref
+from psychrothermo import *
 from psychrometry import *
-from pyomo.environ import Var, Constraint, Block, ConcreteModel, SolverFactory, sqrt, log, exp
+from psychroutils import *
+from pyomo.environ import Block
 
-
-def ipoptsolve(block):
-    model       = ConcreteModel()
-    model.block = block
-    opt = SolverFactory('ipopt')
-    block.result = opt.solve(model)
-    if block.result.Solver[0].Status.key != 'ok': print(block.fixedVars)
-    return block
-
-Block.solve = ipoptsolve
-
-def mix(ha, hb, hc):
+def mix(processname, ha, hb, hc):
     b = Block()
-    b.ha = ha
-    b.hb = hb
-    b.hc = hc
+    b.processname = processname
+    #b.ha = ha
+    #b.hb = hb
+    #b.hc = hc
     b.airbal   = myCon(ha.A + hb.A == hc.A)
-    b.waterbal = myCon(ha.A * ha.Wv + hb.A * hb.Wv == hc.A * hc.Wv)
-    b.heatbal  = myCon(ha.A * ha.hm + hb.A * hb.hm == hc.A * hc.hm)
+    b.waterbal = myCon(ha.V + ha.W + hb.V + hb.W == hc.V + hc.W)
+    b.heatbal  = myCon(ha.H + hb.H == hc.H)
+    return b
+
+def negStream(bb):
+    b = Block()
+    #b.bb = bb
+    b.stream = "-" + bb.stream
+    b.A    = myVar(0   , (-big,big), "kg")
+    b.V    = myVar(0   , (-big,big), "kg")
+    b.W    = myVar(0   , (-big,big), "kg")
+    b.H    = myVar(0   , (-big,big), "kJ")
+    b.A_neg = myCon(b.A == -bb.A)
+    b.V_neg = myCon(b.V == -bb.V)
+    b.W_neg = myCon(b.W == -bb.W)
+    b.H_neg = myCon(b.H == -bb.H)
+    return b
+Block.__neg__ = negStream
+
+def mix2(processname, ha, hb, hc):
+    b = Block()
+    b.processname = processname
+    #b.ha = ha
+    #b.hb = hb
+    #b.hc = hc
+    b.airbal   = myCon(ha.A + hb.A + hc.A == 0)
+    b.waterbal = myCon(ha.V + ha.W + hb.V + hb.W + hc.V + hc.W == 0)
+    b.heatbal  = myCon(ha.H + hb.H + hc.H == 0)
     return b
