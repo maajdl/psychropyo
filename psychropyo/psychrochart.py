@@ -1,8 +1,10 @@
 from psychrometry import *
-import holoviews as hv
 import numpy as np
 import pickle
 import os
+
+import holoviews as hv
+hv.extension('bokeh')
 
 
 class PsychrometricChart:
