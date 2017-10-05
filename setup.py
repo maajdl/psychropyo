@@ -8,7 +8,6 @@ setup(
     author='maajdl',
     author_email='',
     packages=find_packages(),
-    #package_data={'psychropyo': ['thermoBookUSBM.*']},
     install_requires=['pyomo','holoviews'],
     license='',
 )

@@ -1,6 +1,5 @@
-from pyomo.environ import Var, Constraint, Block, ConcreteModel, SolverFactory
+from pyomo.environ import Var, Constraint, Block, ConcreteModel, SolverFactory, Objective, VarList, ConstraintList
 import pandas as pd
-from IPython.display import display as Idisplay
 
 big = 1E12
 
@@ -29,16 +28,17 @@ Block.valuelist = valuelist
 
 def streamDic(ha):
     dic = {v.local_name: v.value for v in ha.component_objects(Var, descend_into=False)}
-    dic.update({'element':ha.element})
+    dic.update({'psyname':ha.psyname})
     return dic
 Block.streamDic = streamDic
 
 def streamTable(lha, fmt='{:3.4g}'):
     pd.options.display.float_format = fmt.format
-    df = [streamDic(ha) for ha in lha if ha.type1=="stream"]
-    di = [ha.element for ha in lha if ha.type1=="stream"]
+    df = [streamDic(ha) for ha in lha if ha.psytype1=="stream"]
+    di = [ha.psyname for ha in lha if ha.psytype1=="stream"]
     df = pd.DataFrame(df, index=di)
-    df = df.drop('element', 1)
+    df = df.drop('psyname', 1)
+    df = df.sort_index()
     return df
 
 def constraintTable(ha, fmt='{:3.4g}'):
@@ -46,3 +46,9 @@ def constraintTable(ha, fmt='{:3.4g}'):
     df = pd.DataFrame({"constraint": {c.local_name: c.body() for c in ha.component_objects(Constraint)}})
     return df
 Block.constraintTable = constraintTable
+
+from IPython.display import display as Idisplay
+from IPython.display import HTML
+
+def Ihtml(str):
+    Idisplay(HTML(str))

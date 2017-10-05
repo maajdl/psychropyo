@@ -34,15 +34,15 @@ class PsychrometricChart:
         pickle.dump(self, open(self.pickleFile, "wb"))
         return self
 
-    def chart(self, points=None, paths=None, rh_alpha=0.5, hs_alpha=0.5, tw_alpha=0.0, vs_alpha=0.0):
-        if points is None: points = []
+    def chart(self, paths=None, rh_alpha=0.5, hs_alpha=0.5, tw_alpha=0.0, vs_alpha=0.0):
         if paths is None: paths = []
+        points = list(set([po for po in [po for pa in paths for po in pa]]))
         rh = hv.Overlay( [hv.Curve(v) for (k,v) in self.rh.items()] )
         hs = hv.Overlay( [hv.Curve(v) for (k,v) in self.hs.items()] )
         tw = hv.Overlay( [hv.Curve(v) for (k,v) in self.tw.items()] )
         vs = hv.Overlay( [hv.Curve(v) for (k,v) in self.vs.items()] )
 
-        txyn = [(point.t.value, point.v.value, point.element)   for point in points]
+        txyn = [(point.t.value, point.v.value, point.psyname)   for point in points]
         po = hv.Points(txyn) * hv.Overlay([ hv.Text(x+1,y+0.001,n) for (x,y,n) in txyn ])
 
         pa = hv.Path([[(point.t.value, point.v.value) for point in path] for path in paths] )

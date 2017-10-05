@@ -4,11 +4,11 @@ from psychrochart import *
 from psychroprocess import *
 from pyomo.environ import Block
 
-def heat(element='heat', **fixedVars):
+def heat(psyname='heat', **fixedVars):
     b = Block()
-    b.element = element
-    b.type1 = "stream"
-    b.type2 = "heat"
+    b.psyname = psyname
+    b.psytype1 = "stream"
+    b.psytype2 = "heat"
     b.H    = myVar(0   , (-big,big), "kJ")      # extensive quantities
     b.A    = myVar(0   , (   0,  0), "kg")
     b.V    = myVar(0   , (   0,  0), "kg")
@@ -16,11 +16,11 @@ def heat(element='heat', **fixedVars):
     for (var, val) in fixedVars.items(): setattr(b, var+"_fixed", myCon(getattr(b, var) == val))
     return b
 
-def water(element='water', **fixedVars):
+def water(psyname='water', **fixedVars):
     b = Block()
-    b.element = element
-    b.type1 = "stream"
-    b.type2 = "water"
+    b.psyname = psyname
+    b.psytype1 = "stream"
+    b.psytype2 = "water"
     b.T = myVar(300, (173, 523), "K")
     b.t = myVar( 25, (-100, 250), "°C")
     b.H    = myVar(0   , (-big,big), "kJ")      # extensive quantities
@@ -32,11 +32,11 @@ def water(element='water', **fixedVars):
     for (var, val) in fixedVars.items(): setattr(b, var+"_fixed", myCon(getattr(b, var) == val))
     return b
 
-def vapor(element='vapor', **fixedVars):
+def vapor(psyname='vapor', **fixedVars):
     b = Block()
-    b.element = element
-    b.type1 = "stream"
-    b.type2 = "vapor"
+    b.psyname = psyname
+    b.psytype1 = "stream"
+    b.psytype2 = "vapor"
     b.T = myVar(300, (173, 523), "K")
     b.t = myVar( 25, (-100, 250), "°C")
     b.H    = myVar(0   , (-big,big), "kJ")      # extensive quantities
@@ -48,7 +48,7 @@ def vapor(element='vapor', **fixedVars):
     for (var, val) in fixedVars.items(): setattr(b, var+"_fixed", myCon(getattr(b, var) == val))
     return b
 
-def humid_air(element, patm=101325, **fixedVars):
+def humid_air(psyname, patm=101325, **fixedVars):
     ref = {  'A': 1.0,
              'H': 45.54956808796108,
              'T': 298.15,
@@ -57,7 +57,7 @@ def humid_air(element, patm=101325, **fixedVars):
              'V': 0.007912721306430524,
              'W': 0,
              'cp': 29.602790962509385,
-             'element': 'ha',
+             'psyname': 'ha',
              'h': 45.54956808796108,
              'm3': 0.8587547216582929,
              'psat': 3169.7468549523596,
@@ -70,9 +70,9 @@ def humid_air(element, patm=101325, **fixedVars):
              'vs': 0.8587547216582929}
     b = Block()
     b.patm = patm
-    b.element = element
-    b.type1 = "stream"
-    b.type2 = "humid air"
+    b.psyname = psyname
+    b.psytype1 = "stream"
+    b.psytype2 = "humid air"
 
     b.t    = myVar(ref["t"]   , (-100, 250), "°C")          # intensive quantities
     b.tw   = myVar(ref["tw"]  , (-100, 250), "°C")
@@ -82,7 +82,7 @@ def humid_air(element, patm=101325, **fixedVars):
     b.Td   = myVar(ref["Td"]  , ( 173, 523), "K" )
     b.psat = myVar(ref["psat"], (   0, big), "Pa")
     b.pvap = myVar(ref["pvap"], (   0, big), "Pa")
-    b.rh   = myVar(ref["rh"]  , (   0,   1), "-")
+    b.rh   = myVar(ref["rh"]  , (   0,   2), "-")
     b.v    = myVar(ref["v"]   , (   0, big), "kg/kga")
     b.h    = myVar(ref["h"]   , (-big, big), "kJ/kga")
     b.vs   = myVar(ref["vs"]  , (   0, big), "m³/kga")
