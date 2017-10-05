@@ -10,7 +10,7 @@ hv.extension('bokeh')
 class PsychrometricChart:
     def __init__(self, patm=101325):
         self.patm = patm
-        self.pickleFile = os.path.join(os.path.dirname(__file__), 'PsychrometricCharts\PsychrometricChart_' + str(patm) + '.p')
+        self.pickleFile = os.path.join(os.path.dirname(__file__), 'PsychrometricCharts', 'PsychrometricChart_' + str(patm) + '.p')
 
     def read(self):
         try:
