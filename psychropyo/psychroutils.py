@@ -1,7 +1,6 @@
 from pyomo.environ import Var, Constraint, Block, ConcreteModel, SolverFactory, Objective, VarList, ConstraintList
 import pandas as pd
 
-big = 1E12
 
 def myVar(initialize, bounds, units):
     v = Var(bounds=bounds, initialize=initialize)
@@ -10,7 +9,6 @@ def myVar(initialize, bounds, units):
 
 def myCon(expr):
     return Constraint(expr=expr)
-
 
 def ipoptsolve(block):
     model       = ConcreteModel()

@@ -1,8 +1,8 @@
-from psychroutils import *
-from psychrothermo import *
-from psychrochart import *
-from psychroprocess import *
+from psychropyo.psychroutils import *
+from psychropyo.psychrothermo import *
 from pyomo.environ import Block
+
+big = 1E12
 
 def heat(psyname='heat', **fixedVars):
     b = Block()

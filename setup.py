@@ -8,6 +8,6 @@ setup(
     author='maajdl',
     author_email='',
     packages=find_packages(),
-    install_requires=['pyomo','holoviews'],
+    install_requires=['pyomo','holoviews','pandas','numpy'],
     license='',
 )

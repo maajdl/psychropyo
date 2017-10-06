@@ -1,6 +1,4 @@
-from psychrothermo import *
-from psychrometry import *
-from psychroutils import *
+from psychropyo.psychroutils import *
 from pyomo.environ import Block
 
 def mix(psyname, ha, hb, hc):

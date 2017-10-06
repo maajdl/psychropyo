@@ -1,11 +1,10 @@
-from psychrometry import *
+from psychropyo.psychrostream import *
 import numpy as np
 import pickle
 import os
 
 import holoviews as hv
 hv.extension('bokeh')
-
 
 class PsychrometricChart:
     def __init__(self, patm=101325):
@@ -27,10 +26,10 @@ class PsychrometricChart:
         tw_range = np.arange(    0,   40,    5)
         vs_range = np.arange( 0.78, 1.02, 0.02)
         patm = self.patm
-        self.rh = {rh:[humid_air('',patm=patm, A=1, rh=rh, t =t ).solve().valuelist(['t','v']) for t  in t_range ] for rh in rh_range}
-        self.hs = {hs:[humid_air('',patm=patm, A=1, h =hs, rh=rh).solve().valuelist(['t','v']) for rh in rh_range] for hs in hs_range}
-        self.tw = {tw:[humid_air('',patm=patm, A=1, tw=tw, rh=rh).solve().valuelist(['t','v']) for rh in rh_range] for tw in tw_range}
-        self.vs = {vs:[humid_air('',patm=patm, A=1, vs=vs, rh=rh).solve().valuelist(['t','v']) for rh in rh_range] for vs in vs_range}
+        self.rh = {rh:[humid_air('', patm=patm, A=1, rh=rh, t =t).solve().valuelist(['t', 'v']) for t in t_range] for rh in rh_range}
+        self.hs = {hs:[humid_air('', patm=patm, A=1, h =hs, rh=rh).solve().valuelist(['t', 'v']) for rh in rh_range] for hs in hs_range}
+        self.tw = {tw:[humid_air('', patm=patm, A=1, tw=tw, rh=rh).solve().valuelist(['t', 'v']) for rh in rh_range] for tw in tw_range}
+        self.vs = {vs:[humid_air('', patm=patm, A=1, vs=vs, rh=rh).solve().valuelist(['t', 'v']) for rh in rh_range] for vs in vs_range}
         pickle.dump(self, open(self.pickleFile, "wb"))
         return self
 
