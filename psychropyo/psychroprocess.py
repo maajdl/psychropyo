@@ -71,7 +71,6 @@ def flowsheetsection(psyname, *devices):
     for stream in internalstreams: setattr(b, stream.psyname, stream)
     b.streams = externalstreams
     b.internalstreams = internalstreams
-
     return b
 
 def flowsheet(psyname, *devices):
@@ -85,6 +84,5 @@ def flowsheet(psyname, *devices):
     streams = set([stream for device in devices for stream in device.streams ])
     for stream in streams: setattr(b, stream.psyname, stream)
     b.streams = streams
-
     return b
 

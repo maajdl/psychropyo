@@ -14,12 +14,12 @@ class PsychrometricChart:
     def read(self):
         try:
             self = pickle.load(open(self.pickleFile, "rb"))
-            return self
         except:
             print("Preparing chart file: " + self.pickleFile)
-            return self.write()
+            self = self.write(open(self.pickleFile, "wb"))
+        return self
 
-    def write(self):
+    def write(self, file):
         t_range  = np.arange(    0,   52,    2)
         rh_range = [0.001]+np.arange( 0.1, 1.1, 0.1).tolist()
         hs_range = np.arange(   10,  150,   10)
@@ -30,10 +30,10 @@ class PsychrometricChart:
         self.hs = {hs:[humid_air('', patm=patm, A=1, h =hs, rh=rh).solve().valuelist(['t', 'v']) for rh in rh_range] for hs in hs_range}
         self.tw = {tw:[humid_air('', patm=patm, A=1, tw=tw, rh=rh).solve().valuelist(['t', 'v']) for rh in rh_range] for tw in tw_range}
         self.vs = {vs:[humid_air('', patm=patm, A=1, vs=vs, rh=rh).solve().valuelist(['t', 'v']) for rh in rh_range] for vs in vs_range}
-        pickle.dump(self, open(self.pickleFile, "wb"))
+        pickle.dump(self, file)
         return self
 
-    def chart(self, paths=None, rh_alpha=0.5, hs_alpha=0.5, tw_alpha=0.0, vs_alpha=0.0):
+    def chart(self, paths=None, rh_alpha=0.5, hs_alpha=0.5, tw_alpha=0.0, vs_alpha=0.0, width=675, height=556, xmax=50, ymax=0.030):
         if paths is None: paths = []
         points = list(set([po for po in [po for pa in paths for po in pa]]))
         rh = hv.Overlay( [hv.Curve(v) for (k,v) in self.rh.items()] )
@@ -57,12 +57,12 @@ class PsychrometricChart:
             pa({'Path'  : {'style': {'color':'black'}}})                    *\
             gr({'Curve' : {'style': {'color':'black' , 'alpha':0.1}}})
 
-        g = g.redim(x ={'range': (0, 50   ),'label': 'Dry bulb temperature  [°C]'})
-        g = g.redim(y ={'range': (0, 0.030),'label': 'Humidity ratio     [kg/kg]'})
+        g = g.redim(x ={'range': (0, xmax),'label': 'Dry bulb temperature  [°C]'})
+        g = g.redim(y ={'range': (0, ymax),'label': 'Humidity ratio     [kg/kg]'})
 
         g = g({'Curve':{'style': {'line_width':0}}})
         g = g({'Curve':{'plot':{'tools':['hover'], 'toolbar':'above', 'yaxis':'right'}}})
-        g = g({'Overlay':{'plot': {'width': 675, 'height':556, 'title_format': 'Psychrometric Chart (' + str(self.patm) + ' Pa)'}} })
+        g = g({'Overlay':{'plot': {'width': width, 'height':height, 'title_format': 'Psychrometric Chart (' + str(self.patm) + ' Pa)'}} })
         g = g({'Text':{'style': {'text_font_size':'8pt'}}})
 
         return g
