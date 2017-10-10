@@ -47,14 +47,32 @@ def split(psyname, ha, hb, hc, **fixedVars):
     for (var, val) in fixedVars.items(): setattr(b, var + "_fixed", myCon(getattr(b, var) == val))
     return b
 
-def exchange(psyname, ha, hb, hc, hA, tout):
+def walllosses(psyname, ha, hb, hc, hA, tout):
     b = Block()
     b.streams = [ha,hb,hc]
     b.psyname = psyname
     b.psytype1 = "process"
-    b.psytype2 = "exchange"
+    b.psytype2 = "walllosses"
     b.exch = myCon(hb.H == hA * (tout - hc.t))
     b.mix = mix(psyname+'mix', ha, hb, hc)
+    return b
+
+def countercurrent(psyname, ha1, ha2, hb1, hb2, eff=1):
+    # ok for ideal eff=1, simplistic otherwise
+    b = Block()
+    b.streams = [ha1, ha2, hb1, hb2]
+    b.psyname = psyname
+    b.psytype1 = "process"
+    b.psytype2 = "countercurrent"
+    b.haA   = myCon(ha1.A == ha2.A)
+    b.haW   = myCon(ha1.W == ha2.W)
+    b.haV   = myCon(ha1.V == ha2.V)
+    b.hbA   = myCon(hb1.A == hb2.A)
+    b.hbW   = myCon(hb1.W == hb2.W)
+    b.hbV   = myCon(hb1.V == hb2.V)
+    #b.exch  = myCon((ha1.t - hb2.t)*(ha2.t - hb1.t) == 0)
+    b.exch  = myCon((ha2.t - ha1.t - eff*(hb1.t - ha1.t))*(hb2.t - hb1.t - eff*(ha1.t - hb1.t)) == 0)
+    b.hbal  = myCon(ha1.H + hb1.H == ha2.H + hb2.H)
     return b
 
 def flowsheetsection(psyname, *devices):
