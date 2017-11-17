@@ -3,7 +3,7 @@
 
 For Pyomo, see:  http://www.pyomo.org/
    
-The psychropyo package is a tool for psychrometry calculations.
+The psychropyo package is a tool for psychrometry calculations.   
 It is based on the Pyomo mathematical modeling tool.  
 The psychropyo package contains these modules:
 
