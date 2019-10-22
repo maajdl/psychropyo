@@ -1,5 +1,5 @@
 # psychropyo:  Psychrometry using Pyomo
-<img src="psychrometricchart.png" width="450" align="right"/>
+<img src="github.com/maajdl/psychropyo/blob/master/psychrometricchart.png" width="450" align="right"/>
 
 For Pyomo, see:  http://www.pyomo.org/
    
