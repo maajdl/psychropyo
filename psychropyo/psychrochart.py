@@ -7,6 +7,7 @@ import holoviews as hv
 hv.extension('bokeh')
 
 from bokeh.io import output_notebook
+output_notebook()
 
 class PsychrometricChart:
     def __init__(self, patm=101325):
@@ -37,7 +38,6 @@ class PsychrometricChart:
         return self
 
     def chart(self, paths=None, rh_alpha=0.5, hs_alpha=0.5, tw_alpha=0.0, vs_alpha=0.0, width=675, height=556, xmax=50, ymax=0.030):
-        output_notebook()
         if paths is None: paths = []
         points = list(set([po for po in [po for pa in paths for po in pa]]))
         rh = hv.Overlay( [hv.Curve(v) for (k,v) in self.rh.items()] )
