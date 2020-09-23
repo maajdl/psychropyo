@@ -6,6 +6,7 @@ import os
 import holoviews as hv
 hv.extension('bokeh')
 
+from bokeh.plotting import show
 from bokeh.io import output_notebook
 output_notebook()
 
