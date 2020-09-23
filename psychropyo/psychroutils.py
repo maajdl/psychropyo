@@ -15,7 +15,7 @@ def ipoptsolve(block):
     model.block = block
     opt = SolverFactory('ipopt')
     block.result = opt.solve(model)
-    status = block.result.Solver[0].Status.key
+    status = block.result.Solver[0].Status.value
     if status != 'ok': print("Solver returned : ", status)
     return block
 Block.solve = ipoptsolve
