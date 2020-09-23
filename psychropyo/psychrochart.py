@@ -6,6 +6,8 @@ import os
 import holoviews as hv
 hv.extension('bokeh')
 
+from bokeh.io import output_notebook
+
 class PsychrometricChart:
     def __init__(self, patm=101325):
         self.patm = patm
