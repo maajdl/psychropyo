@@ -50,20 +50,20 @@ class PsychrometricChart:
         gr = hv.Overlay(  [hv.Curve([( 0, y),(50,   y)]) for y in np.arange(0, 0.042, 0.002)]+
                             [hv.Curve([( x, 0),( x,0.04)]) for x in np.arange(0,    52,     2)] )
 
-        g = rh({'Curve' : {'style': {'color':'red'   , 'alpha':rh_alpha, 'hover_line_alpha':1}}}) *\
-            hs({'Curve' : {'style': {'color':'blue'  , 'alpha':hs_alpha, 'hover_line_alpha':1}}}) *\
-            tw({'Curve' : {'style': {'color':'green' , 'alpha':tw_alpha}}}) *\
-            vs({'Curve' : {'style': {'color':'grey'  , 'alpha':vs_alpha}}}) *\
-            po({'Points': {'style': {'color':'black' , 'size':5 }}})        *\
-            pa({'Path'  : {'style': {'color':'black'}}})                    *\
-            gr({'Curve' : {'style': {'color':'black' , 'alpha':0.1}}})
+        g = rh.opts({'Curve' : {'style': {'color':'red'   , 'alpha':rh_alpha, 'hover_line_alpha':1}}}) *\
+            hs.opts({'Curve' : {'style': {'color':'blue'  , 'alpha':hs_alpha, 'hover_line_alpha':1}}}) *\
+            tw.opts({'Curve' : {'style': {'color':'green' , 'alpha':tw_alpha}}}) *\
+            vs.opts({'Curve' : {'style': {'color':'grey'  , 'alpha':vs_alpha}}}) *\
+            po.opts({'Points': {'style': {'color':'black' , 'size':5 }}})        *\
+            pa.opts({'Path'  : {'style': {'color':'black'}}})                    *\
+            gr.opts({'Curve' : {'style': {'color':'black' , 'alpha':0.1}}})
 
         g = g.redim(x ={'range': (0, xmax),'label': 'Dry bulb temperature  [°C]'})
         g = g.redim(y ={'range': (0, ymax),'label': 'Humidity ratio     [kg/kg]'})
 
-        g = g({'Curve':{'style': {'line_width':0}}})
-        g = g({'Curve':{'plot':{'tools':['hover'], 'toolbar':'above', 'yaxis':'right'}}})
-        g = g({'Overlay':{'plot': {'width': width, 'height':height, 'title': 'Psychrometric Chart (' + str(self.patm) + ' Pa)'}} })
-        g = g({'Text':{'style': {'text_font_size':'8pt'}}})
+        g = g.opts({'Curve':{'style': {'line_width':0}}})
+        g = g.opts({'Curve':{'plot':{'tools':['hover'], 'toolbar':'above', 'yaxis':'right'}}})
+        g = g.opts({'Overlay':{'plot': {'width': width, 'height':height, 'title': 'Psychrometric Chart (' + str(self.patm) + ' Pa)'}} })
+        g = g.opts({'Text':{'style': {'text_font_size':'8pt'}}})
 
         return g
