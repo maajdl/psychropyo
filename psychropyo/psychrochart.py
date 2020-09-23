@@ -63,7 +63,7 @@ class PsychrometricChart:
 
         g = g({'Curve':{'style': {'line_width':0}}})
         g = g({'Curve':{'plot':{'tools':['hover'], 'toolbar':'above', 'yaxis':'right'}}})
-        g = g({'Overlay':{'plot': {'width': width, 'height':height, 'title_format': 'Psychrometric Chart (' + str(self.patm) + ' Pa)'}} })
+        g = g({'Overlay':{'plot': {'width': width, 'height':height, 'title': 'Psychrometric Chart (' + str(self.patm) + ' Pa)'}} })
         g = g({'Text':{'style': {'text_font_size':'8pt'}}})
 
         return g
