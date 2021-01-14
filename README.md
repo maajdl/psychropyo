@@ -12,4 +12,3 @@ The psychropyo package contains these modules:
 * psychroprocess: Pyomo models for simple processes: mix, split, condense, exchange, flowsheetsection, flowsheet    
 * psychrochart: module for plotting on a psychrometric chart    
 * psychroutils: utilities functions
-<iframe src="https://www.linkedin.com/in/michel-jadoul-modelingoptimization/" height="100" width="100" frameBorder="0"></iframe>
